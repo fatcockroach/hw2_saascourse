@@ -7,10 +7,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:sort] == 'title'
+    @sort = params[:sort]
+    if @sort == 'title'
       @movies = Movie.find(:all, :order => 'title')  # bad, should reference table name and not use hardcoded strings
-      
-    elsif params[:sort] == 'release_date'
+    elsif @sort == 'release_date'
       @movies = Movie.find(:all, :order => 'release_date') # bad, should reference table name and not use hardcoded strings
     else
       @movies = Movie.all

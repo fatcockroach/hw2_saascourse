@@ -7,6 +7,14 @@ class MoviesController < ApplicationController
   end
 
   def index
+  
+    @selected_ratings = params['ratings'].keys if params['ratings']
+    # --- debug ---
+    puts "\n--- INDEX METHOD START ---"
+    puts params.inspect
+    puts @selected_ratings.inspect
+    # -------------
+    
     @all_ratings = Movie.get_all_ratings
     @sort = params[:sort]
 
@@ -17,6 +25,7 @@ class MoviesController < ApplicationController
     else
       @movies = Movie.all
     end
+    puts "\n--- INDEX METHOD END ---"
   end
   
   

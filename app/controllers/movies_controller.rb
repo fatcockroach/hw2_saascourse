@@ -7,7 +7,9 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.get_all_ratings
     @sort = params[:sort]
+
     if @sort == 'title'
       @movies = Movie.find(:all, :order => 'title')  # bad, should reference table name and not use hardcoded strings
     elsif @sort == 'release_date'
@@ -16,7 +18,9 @@ class MoviesController < ApplicationController
       @movies = Movie.all
     end
   end
-
+  
+  
+  
   def new
     # default: render 'new' template
   end

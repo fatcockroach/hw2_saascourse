@@ -7,7 +7,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-  
+    @selected_ratings = []
     @selected_ratings = params['ratings'].keys if params['ratings']
     # --- debug ---
     puts "\n--- INDEX METHOD START ---"

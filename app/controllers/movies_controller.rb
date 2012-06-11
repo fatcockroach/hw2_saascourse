@@ -7,20 +7,19 @@ class MoviesController < ApplicationController
   end
 
   def index
-    #~ @selected_ratings = []
+#~ @selected_ratings = []
     
     unless params.has_key? :sort or params.has_key? :ratings
-      #~ Not RESTful
-      #~ params[:sort] = session[:sort]
-      #~ params[:ratings] = session[:ratings]
-      flash.keep
-      redirect_to movies_path :sort => "#{session[:sort]}", 
-      :ratings => "#{session[:ratings]}"
+      # --------- Not RESTful --------
+      params[:sort] = session[:sort]
+      params[:ratings] = session[:ratings]
     end
     
+
     
+    # ==================================================
     if params['ratings']
-      #~ @selected_ratings = params['ratings'].keys 
+      #~ @selected_ratings = params['ratings'].keys
       if params['ratings'].kind_of? Hash
         @selected_ratings = params['ratings'].keys
       else
@@ -38,6 +37,7 @@ class MoviesController < ApplicationController
     
     @all_ratings = Movie.get_all_ratings
     @sort = params[:sort]
+    # ==================================================
     
     if @sort == 'title'
       @movies = Movie.find(:all, :order => 'title')
@@ -52,6 +52,24 @@ class MoviesController < ApplicationController
       @movies = Movie.find_all_by_rating(@selected_ratings) # works
     end
     
+    
+    unless params.has_key? :sort or params.has_key? :ratings    
+      # --------- RESTfull -----------
+      
+      # --- first start condition ---
+      #~ unless session[:sort] or session[:ratings]
+        #~ 
+      #~ end
+      
+      # -----------------------------
+      flash.keep
+      redirect_to movies_path :sort => "#{session[:sort]}",
+      :ratings => "#{session[:ratings]}"
+    end
+    
+    
+    
+    # ==================================================
     # saving current settings to session hash:
     session[:sort] = params[:sort]
     session[:ratings] = params[:ratings]

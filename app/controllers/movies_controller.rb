@@ -8,6 +8,13 @@ class MoviesController < ApplicationController
 
   def index
     #~ @selected_ratings = []
+    
+    unless params.has_key? :sort or params.has_key? :ratings
+      params[:sort] = session[:sort]
+      params[:ratings] = session[:ratings]
+    end
+    
+    
     if params['ratings']
       #~ @selected_ratings = params['ratings'].keys 
       if params['ratings'].kind_of? Hash
@@ -20,6 +27,7 @@ class MoviesController < ApplicationController
     end
     # --- debug ---
     puts "\n--- INDEX METHOD START ---"
+    puts session.inspect
     puts params.inspect
     puts @selected_ratings.inspect
     # -------------
@@ -39,6 +47,11 @@ class MoviesController < ApplicationController
       #~ @movies = Movie.find_all_by_rating(params[:ratings].keys) # works
       @movies = Movie.find_all_by_rating(@selected_ratings) # works
     end
+    
+    # saving current settings to session hash:
+    session[:sort] = params[:sort]
+    session[:ratings] = params[:ratings]
+
     puts "\n--- INDEX METHOD END ---"
   end
   

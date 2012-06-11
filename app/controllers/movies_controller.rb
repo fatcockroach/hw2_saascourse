@@ -10,8 +10,12 @@ class MoviesController < ApplicationController
     #~ @selected_ratings = []
     
     unless params.has_key? :sort or params.has_key? :ratings
-      params[:sort] = session[:sort]
-      params[:ratings] = session[:ratings]
+      #~ Not RESTful
+      #~ params[:sort] = session[:sort]
+      #~ params[:ratings] = session[:ratings]
+      flash.keep
+      redirect_to movies_path :sort => "#{session[:sort]}", 
+      :ratings => "#{session[:ratings]}"
     end
     
     

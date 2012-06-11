@@ -7,31 +7,64 @@ class MoviesController < ApplicationController
   end
 
   def index
-#~ @selected_ratings = []
     
-    unless params.has_key? :sort or params.has_key? :ratings
+    #~ unless params.has_key? :sort or params.has_key? :ratings
       # --------- Not RESTful --------
-      params[:sort] = session[:sort]
-      params[:ratings] = session[:ratings]
+      #~ params[:sort] = session[:sort]
+      #~ params[:ratings] = session[:ratings]
+      #~ @sort_data = session[:sort]
+      #~ @ratings_data = session[:ratings]
+    #~ end
+
+    unless params.has_key? :sort or params.has_key? :ratings    
+      #~ # --------- RESTfull -----------
+      # 1 - this is the first start (session is empty)
+      unless session.has_key? :sort or session.has_key? :ratings
+        session[:ratings] = Movie.get_all_ratings
+      end
+
+      # 2 - restore from previous session
+      flash.keep
+      redirect_to movies_path :sort => session[:sort],
+      :ratings => session[:ratings]
+      #~ redirect_to movies_path :sort => "#{session[:sort]}",
+      #~ :ratings => "#{session[:ratings]}"
+      #~ redirect_to movies_path :sort => "#{@sort}",
+      #~ :ratings => "#{@selected_ratings}"
     end
     
-
+    #~ params[:sort] = @sort_data
+    #~ params[:ratings] = @ratings_data
+    
+    # --- debug 0 ---
+    puts "\n--- INDEX METHOD START ---"
+    puts "SESSION:"
+    puts session.inspect
+    puts "PARAMS:"
+    puts params.inspect
+    puts "@SELECTED_RATINGS:"
+    puts @selected_ratings.inspect
+    
+    # ---------------
     
     # ==================================================
-    if params['ratings']
+    if params.has_key? :ratings and params[:ratings] != nil
       #~ @selected_ratings = params['ratings'].keys
-      if params['ratings'].kind_of? Hash
-        @selected_ratings = params['ratings'].keys
+      if params[:ratings].kind_of? Hash
+        @selected_ratings = params[:ratings].keys
       else
-        @selected_ratings = params['ratings']
+        @selected_ratings = params[:ratings]
       end
     else
       @selected_ratings = Movie.get_all_ratings
     end
-    # --- debug ---
+    # --- debug 1 ---
     puts "\n--- INDEX METHOD START ---"
+    puts "SESSION:"
     puts session.inspect
+    puts "PARAMS:"
     puts params.inspect
+    puts "@SELECTED_RATINGS:"
     puts @selected_ratings.inspect
     # -------------
     
@@ -53,19 +86,7 @@ class MoviesController < ApplicationController
     end
     
     
-    unless params.has_key? :sort or params.has_key? :ratings    
-      # --------- RESTfull -----------
-      
-      # --- first start condition ---
-      #~ unless session[:sort] or session[:ratings]
-        #~ 
-      #~ end
-      
-      # -----------------------------
-      flash.keep
-      redirect_to movies_path :sort => "#{session[:sort]}",
-      :ratings => "#{session[:ratings]}"
-    end
+
     
     
     
@@ -73,9 +94,15 @@ class MoviesController < ApplicationController
     # saving current settings to session hash:
     session[:sort] = params[:sort]
     session[:ratings] = params[:ratings]
+    #~ session[:sort] = @sort_data
+    #~ session[:ratings] = @ratings_data
+    
+
 
     puts "\n--- INDEX METHOD END ---"
   end
+  
+  
   
   def filter_ratings
     @movies = @movies.select do |m|

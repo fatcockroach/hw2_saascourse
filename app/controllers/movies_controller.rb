@@ -7,8 +7,17 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @selected_ratings = []
-    @selected_ratings = params['ratings'].keys if params['ratings']
+    #~ @selected_ratings = []
+    if params['ratings']
+      #~ @selected_ratings = params['ratings'].keys 
+      if params['ratings'].kind_of? Hash
+        @selected_ratings = params['ratings'].keys
+      else
+        @selected_ratings = params['ratings']
+      end
+    else
+      @selected_ratings = Movie.get_all_ratings
+    end
     # --- debug ---
     puts "\n--- INDEX METHOD START ---"
     puts params.inspect
@@ -17,17 +26,27 @@ class MoviesController < ApplicationController
     
     @all_ratings = Movie.get_all_ratings
     @sort = params[:sort]
-
+    
     if @sort == 'title'
-      @movies = Movie.find(:all, :order => 'title')  # bad, should reference table name and not use hardcoded strings
+      @movies = Movie.find(:all, :order => 'title')
+      filter_ratings
     elsif @sort == 'release_date'
-      @movies = Movie.find(:all, :order => 'release_date') # bad, should reference table name and not use hardcoded strings
+      @movies = Movie.find(:all, :order => 'release_date')
+      filter_ratings
     else
-      @movies = Movie.all
+      #~ @movies = Movie.all
+      #~ @movies = Movie.where({ :rating => @selected_ratings }).all # works
+      #~ @movies = Movie.find_all_by_rating(params[:ratings].keys) # works
+      @movies = Movie.find_all_by_rating(@selected_ratings) # works
     end
     puts "\n--- INDEX METHOD END ---"
   end
   
+  def filter_ratings
+    @movies = @movies.select do |m|
+      @selected_ratings.include? m.rating
+    end
+  end
   
   
   def new
